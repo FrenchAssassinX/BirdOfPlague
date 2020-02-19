@@ -7,7 +7,7 @@ public class MovePlayer : MonoBehaviour
     public Rigidbody2D body2D;                  // Body 2D of the sprite
     private float horizontalMove = 0f;          // Float to handling horizontal moves of the sprite
     private float verticalMove = 0f;            // Float to handling vertical moves of the sprite
-    public float moveSpeed = 100f;              // Move speed multiply by horizontalMoves or verticalMoves to create velocity 
+    public float moveSpeed = 4f;              // Move speed multiply by horizontalMoves or verticalMoves to create velocity 
 
     private bool bSpriteFacingRight = true;     // Boolean to flip sprite on the good direction
 

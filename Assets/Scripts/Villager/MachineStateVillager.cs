@@ -13,9 +13,10 @@ public class MachineStateVillager : MonoBehaviour
     public string[] STATE_MACHINE;                      // State machine for villager
     public string currentState;                         // Value to verify current state of villager
 
-    private float horizontalMove = 0.3f;                // Float to handling horizontal moves of the sprite
-    private float verticalMove = 0.3f;                  // Float to handling vertical moves of the sprite
-    public float moveSpeed = 2f;                        // Move speed multiply by horizontalMoves or verticalMoves to create velocity 
+    private float horizontalMove = 0.1f;                // Float to handling horizontal moves of the sprite
+    private float verticalMove = 0.1f;                  // Float to handling vertical moves of the sprite
+    public float moveSpeed;                             // Move speed multiply by horizontalMoves or verticalMoves to create velocity 
+    public float INITIAL_SPEED = 2f;                    // Standard speed of the villager
 
     bool bCollision = false;                            // Boolean to detect collision
     private bool bSpriteFacingRight = true;             // Boolean to flip sprite on the good direction
@@ -29,6 +30,8 @@ public class MachineStateVillager : MonoBehaviour
 
         STATE_MACHINE = new string[] { "", "walk", "change", "afraid" };    // Initialize state machine
         currentState = STATE_MACHINE[0];                                    // By default state of villager is empty
+
+        moveSpeed = INITIAL_SPEED;                                          // Standard move speed of the villager
     }
 
     void Update()
@@ -51,6 +54,8 @@ public class MachineStateVillager : MonoBehaviour
         }
         else if (currentState == STATE_MACHINE[1])
         {
+            moveSpeed = INITIAL_SPEED;
+
             /* If collision is detected */
             if (bCollision)
             {
@@ -74,6 +79,7 @@ public class MachineStateVillager : MonoBehaviour
             double angle = Math.Atan2(directionX, directionY);                      // Calculating an angle with the X and Y direction
 
             Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
+            moveSpeed = INITIAL_SPEED;
             newVelocity.x = horizontalMove * moveSpeed * (float)Math.Cos(angle);    // Affect X velocity
             newVelocity.y = verticalMove * moveSpeed * (float)Math.Sin(angle);      // Affect Y velocity
 
@@ -93,12 +99,11 @@ public class MachineStateVillager : MonoBehaviour
 
             Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
 
-            // Villager runs, afraid of the vampire
-            horizontalMove *= (-1);
-            verticalMove *= (-1);
+            horizontalMove *= (-1);                                                 // Invert horizontal move
+            verticalMove *= (-1);                                                   // Invert vertical move
 
-            newVelocity.x = horizontalMove * moveSpeed * (float)Math.Cos(angle);    // Affect X velocity
-            newVelocity.y = verticalMove * moveSpeed * (float)Math.Sin(angle);      // Affect Y velocity
+            newVelocity.x = horizontalMove * moveSpeed * 3 * (float)Math.Cos(angle);    // Affect X velocity
+            newVelocity.y = verticalMove * moveSpeed * 3 * (float)Math.Sin(angle);      // Affect Y velocity
 
             villagerBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
 

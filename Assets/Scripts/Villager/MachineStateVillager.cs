@@ -5,7 +5,10 @@ using UnityEngine;
 
 public class MachineStateVillager : MonoBehaviour
 {
-    public Rigidbody2D villagerBody2D;
+    public Rigidbody2D villagerBody2D;                  // RigidBody2D of the villager
+    public BoxCollider2D[] boxColliders;                // Table of all BoxCollider2D of the villager
+
+    public GameObject player;                           // Player Game Object
 
     public string[] STATE_MACHINE;                      // State machine for villager
     public string currentState;                         // Value to verify current state of villager
@@ -19,11 +22,13 @@ public class MachineStateVillager : MonoBehaviour
 
     void Start()
     {
-        villagerBody2D = this.gameObject.GetComponent<Rigidbody2D>();   // Get RigidBody2D of the villager 
+        villagerBody2D = gameObject.GetComponent<Rigidbody2D>();       // Get RigidBody2D of the villager 
+        boxColliders = gameObject.GetComponents<BoxCollider2D>();      // Find all colliders of the villager
+            
+        player = GameObject.Find("Player");                                 // Keep player in memory
 
-        STATE_MACHINE = new string[] { "", "walk", "change" };          // Initialize state machine
-
-        currentState = STATE_MACHINE[0];                                // By default state of villager is empty
+        STATE_MACHINE = new string[] { "", "walk", "change", "afraid" };    // Initialize state machine
+        currentState = STATE_MACHINE[0];                                    // By default state of villager is empty
     }
 
     void Update()
@@ -63,10 +68,10 @@ public class MachineStateVillager : MonoBehaviour
             System.Random random = new System.Random();                             // Create new random
 
             /* Generating random X and Y direction for the player */
-            float directionX = (this.gameObject.transform.position.x) - (random.Next(1, 129));
-            float directionY = (this.gameObject.transform.position.y) - (random.Next(1, 129));
+            float directionX = (gameObject.transform.position.x) - (random.Next(1, 129));
+            float directionY = (gameObject.transform.position.y) - (random.Next(1, 129));
 
-            double angle= Math.Atan2(directionX, directionY);                       // Calculating an angle with the X and Y direction
+            double angle = Math.Atan2(directionX, directionY);                      // Calculating an angle with the X and Y direction
 
             Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
             newVelocity.x = horizontalMove * moveSpeed * (float)Math.Cos(angle);    // Affect X velocity
@@ -75,6 +80,29 @@ public class MachineStateVillager : MonoBehaviour
             villagerBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
 
             currentState = STATE_MACHINE[1];                                        // Change state to walk
+        }
+        else if (currentState == STATE_MACHINE[3])
+        {
+            System.Random random = new System.Random();                             // Create new random
+
+            /* Generating random X and Y direction for the player */
+            float directionX = (gameObject.transform.position.x) - (random.Next(1, 129));
+            float directionY = (gameObject.transform.position.y) - (random.Next(1, 129));
+
+            double angle = Math.Atan2(directionX, directionY);                      // Calculating an angle with the X and Y direction
+
+            Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
+
+            // Villager runs, afraid of the vampire
+            horizontalMove *= (-1);
+            verticalMove *= (-1);
+
+            newVelocity.x = horizontalMove * moveSpeed * (float)Math.Cos(angle);    // Affect X velocity
+            newVelocity.y = verticalMove * moveSpeed * (float)Math.Sin(angle);      // Affect Y velocity
+
+            villagerBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
+
+            currentState = STATE_MACHINE[1];                                        // Return to walk state
         }
     }
 
@@ -91,26 +119,39 @@ public class MachineStateVillager : MonoBehaviour
     /* Function to detect collision with walls */
     void OnCollisionEnter2D(Collision2D pCollision)
     {
-        /* Inverse move direction */
-        if (pCollision.transform.position.x >= this.transform.position.x)
+        if (pCollision.otherCollider == boxColliders[0])
         {
-            horizontalMove *= (-1);
-        }
-        else if (pCollision.transform.position.x < this.transform.position.x)
-        {
-            horizontalMove *= (-1);
-        }
+            /* If the colliding game object is not the player, then proceed */
+            if (!pCollision.transform.gameObject.name.Equals("Player"))
+            {
+                /* Inverse move direction */
+                horizontalMove *= (-1);
+                verticalMove *= (-1);
 
-        if (pCollision.transform.position.y >= this.transform.position.y)
-        {
-            verticalMove *= (-1);
+                bCollision = true;      // Change boolean to true to change direction of the villager
+            }
+            else
+            {
+                Physics2D.IgnoreCollision(pCollision.collider, pCollision.otherCollider);   // Ignoring collision with player
+            }
         }
-        else if (pCollision.transform.position.y < this.transform.position.y)
+        else if (pCollision.otherCollider == boxColliders[1])
         {
-            verticalMove *= (-1);
-        }
+            /* If the villager see the player in his field of view, then he runs ! */
+            if (pCollision.gameObject == player)
+            {
+                currentState = STATE_MACHINE[3];
+            }
+            /* Else is just a wall so change only direction and keep mooving */
+            else
+            {
+                horizontalMove *= (-1);
+                verticalMove *= (-1);
 
-        bCollision = true;      // Change boolean to true to change direction of the villager
+                bCollision = true;
+            }
+        }
+        
     }
 
     void OnCollisionExit2D(Collision2D collision)

@@ -5,15 +5,19 @@ using UnityEngine;
 public class MovePlayer : MonoBehaviour
 {
     public Rigidbody2D body2D;                  // Body 2D of the sprite
+    public Animator animator;                   // animator attach to player
+
     private float horizontalMove = 0f;          // Float to handling horizontal moves of the sprite
     private float verticalMove = 0f;            // Float to handling vertical moves of the sprite
-    public float moveSpeed = 4f;              // Move speed multiply by horizontalMoves or verticalMoves to create velocity 
+    public float moveSpeed = 4f;                // Move speed multiply by horizontalMoves or verticalMoves to create velocity 
 
     private bool bSpriteFacingRight = true;     // Boolean to flip sprite on the good direction
+    public bool bIsBitting = false;             // Boolean to detect where player is bitting
 
     void Start()
     {
-        body2D = GetComponent<Rigidbody2D>();
+        body2D = GetComponent<Rigidbody2D>();   // Get RigigBody2D attached to the player
+        animator = GetComponent<Animator>();    // Get animator attached to the player
     }
     
     void Update()
@@ -21,6 +25,38 @@ public class MovePlayer : MonoBehaviour
         horizontalMove = Input.GetAxis("Horizontal");       // Get x moves with inputs
         verticalMove = Input.GetAxis("Vertical");           // Get y moves with inputs
 
+        /* Input for bitting villagers */
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            bIsBitting = true;
+        }
+        else
+        {
+            bIsBitting = false;
+        }
+
+        /* Start Animator settings */
+        /* Running animation */
+        if (Mathf.Abs(horizontalMove) > 0 || Mathf.Abs(verticalMove) > 0)
+        {
+            animator.SetBool("IsRunning", true);
+        }
+        else
+        {
+            animator.SetBool("IsRunning", false);
+        }
+        /* Bitting animation */
+        if (bIsBitting)
+        {
+            animator.SetBool("IsBitting", true);
+        }
+        else
+        {
+            animator.SetBool("IsBitting", false);
+        }
+        /* End Animator settings */
+
+        /* Flipping sprite */
         if (horizontalMove < 0 && bSpriteFacingRight)
         {
             FlipSprite();

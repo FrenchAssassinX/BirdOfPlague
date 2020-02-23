@@ -7,6 +7,7 @@ public class MachineStateVillager : MonoBehaviour
 {
     public Rigidbody2D villagerBody2D;                  // RigidBody2D of the villager
     public BoxCollider2D[] boxColliders;                // Table of all BoxCollider2D of the villager
+    public Animator villagerAnimator;                   // Animator of the villager
 
     public GameObject player;                           // Player Game Object
 
@@ -21,11 +22,17 @@ public class MachineStateVillager : MonoBehaviour
     bool bCollision = false;                            // Boolean to detect collision
     private bool bSpriteFacingRight = true;             // Boolean to flip sprite on the good direction
 
+    private bool bIsAfraid = false;                     // Boolean to change animation of villager when he's afraid by the vampire
+    private bool bIsWalking= false;                     // 
+    private bool bIsIdle = false;                       // 
+
     void Start()
     {
-        villagerBody2D = gameObject.GetComponent<Rigidbody2D>();       // Get RigidBody2D of the villager 
-        boxColliders = gameObject.GetComponents<BoxCollider2D>();      // Find all colliders of the villager
-            
+        villagerBody2D = gameObject.GetComponent<Rigidbody2D>();            // Get RigidBody2D of the villager 
+        boxColliders = gameObject.GetComponents<BoxCollider2D>();           // Find all colliders of the villager
+
+        villagerAnimator = gameObject.GetComponent<Animator>();             // Get Animator attached to the villager
+
         player = GameObject.Find("Player");                                 // Keep player in memory
 
         STATE_MACHINE = new string[] { "", "walk", "change", "afraid" };    // Initialize state machine
@@ -47,18 +54,24 @@ public class MachineStateVillager : MonoBehaviour
         }
 
         /* Handling machine state */
-        if (currentState == STATE_MACHINE[0])
+        if (currentState == STATE_MACHINE[0])           // No state by default
         {
             // Change direction
             currentState = STATE_MACHINE[2];
         }
-        else if (currentState == STATE_MACHINE[1])
+        else if (currentState == STATE_MACHINE[1])      // Walk state
         {
+            bIsAfraid = false;                          // Is afraid boolean passed to false for animation
+            bIsWalking = true;
+            bIsIdle = false;
+
             moveSpeed = INITIAL_SPEED;
 
             /* If collision is detected */
             if (bCollision)
             {
+                bIsIdle = true;
+
                 /* Stop the villager by setting velocity to 0 */
                 Vector2 newVelocity = new Vector2();
                 newVelocity.x = 0;
@@ -68,8 +81,12 @@ public class MachineStateVillager : MonoBehaviour
                 currentState = STATE_MACHINE[2];            // Change state of the villager to change direction
             }
         }
-        else if (currentState == STATE_MACHINE[2])
+        else if (currentState == STATE_MACHINE[2])      // Change direction state
         {
+            bIsAfraid = false;                                                      // Is afraid boolean passed to false for animation
+            bIsWalking = true;
+            bIsIdle = false;
+
             System.Random random = new System.Random();                             // Create new random
 
             /* Generating random X and Y direction for the player */
@@ -87,8 +104,12 @@ public class MachineStateVillager : MonoBehaviour
 
             currentState = STATE_MACHINE[1];                                        // Change state to walk
         }
-        else if (currentState == STATE_MACHINE[3])
+        else if (currentState == STATE_MACHINE[3])      // Afraid state
         {
+            bIsAfraid = true;                                                       // Is afraid boolean passed to true for animation
+            bIsWalking = false;
+            bIsIdle = false;
+
             System.Random random = new System.Random();                             // Create new random
 
             /* Generating random X and Y direction for the player */
@@ -109,6 +130,36 @@ public class MachineStateVillager : MonoBehaviour
 
             currentState = STATE_MACHINE[1];                                        // Return to walk state
         }
+        /* End Handling State Machine */
+
+        /* Handling animations */
+        if (bIsAfraid)
+        {
+            villagerAnimator.SetBool("IsAfraid", true);
+        }
+        else
+        {
+            villagerAnimator.SetBool("IsAfraid", false);
+        }
+
+        if (bIsWalking)
+        {
+            villagerAnimator.SetBool("IsWalking", true);
+        }
+        else
+        {
+            villagerAnimator.SetBool("IsWalking", false);
+        }
+
+        if (bIsIdle)
+        {
+            villagerAnimator.SetBool("IsIdle", true);
+        }
+        else
+        {
+            villagerAnimator.SetBool("IsIdle", false);
+        }
+        /* End Handling animations */
     }
 
     private void FlipSprite()

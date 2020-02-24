@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class MachineStateVillager : MonoBehaviour
 {
-    // TO DO : Create sight of view
-
     public Rigidbody2D villagerBody2D;                  // RigidBody2D of the villager
-    public BoxCollider2D[] boxColliders;                // Table of all BoxCollider2D of the villager
     public Animator villagerAnimator;                   // Animator of the villager
 
     public GameObject player;                           // Player Game Object
+
+    public Transform castPoint;                         // Transform to give a view to villager
+    public float viewSight = 3f;                        // Distance of view of the villager
 
     public string[] STATE_MACHINE;                      // State machine for villager
     public string currentState;                         // Value to verify current state of villager
@@ -31,11 +31,11 @@ public class MachineStateVillager : MonoBehaviour
     void Start()
     {
         villagerBody2D = gameObject.GetComponent<Rigidbody2D>();            // Get RigidBody2D of the villager 
-        boxColliders = gameObject.GetComponents<BoxCollider2D>();           // Find all colliders of the villager
-
         villagerAnimator = gameObject.GetComponent<Animator>();             // Get Animator attached to the villager
 
         player = GameObject.Find("Player");                                 // Keep player in memory
+
+        castPoint = GameObject.Find("CastPoint").transform;                 // Find castPoint on scene
 
         STATE_MACHINE = new string[] { "", "walk", "change", "afraid" };    // Initialize state machine
         currentState = STATE_MACHINE[0];                                    // By default state of villager is empty
@@ -45,6 +45,12 @@ public class MachineStateVillager : MonoBehaviour
 
     void Update()
     {
+        /* If villager see the player, start running from him ! */
+        if (CanSeePlayer(viewSight))
+        {
+            RunFromPlayer();
+        }
+
         /* Flipping sprite */
         if (horizontalMove > 0 && bSpriteFacingRight)
         {
@@ -130,6 +136,7 @@ public class MachineStateVillager : MonoBehaviour
 
             villagerBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
 
+            Invoke("StopRunFromPlayer", 5);
             currentState = STATE_MACHINE[1];                                        // Return to walk state
         }
         /* End Handling State Machine */
@@ -164,6 +171,53 @@ public class MachineStateVillager : MonoBehaviour
         /* End Handling animations */
     }
 
+    private bool CanSeePlayer(float pDistance)
+    {
+        bool bSeePlayer = false;
+        float castDistance = pDistance;
+
+        if (!bSpriteFacingRight)
+        {
+            castDistance = -pDistance;
+        }
+
+        Vector2 endPosition = castPoint.position + Vector3.right * castDistance;
+        RaycastHit2D hit = Physics2D.Linecast(castPoint.position, endPosition, 1 << LayerMask.NameToLayer("Default"));
+
+        if (hit.collider != null)
+        {
+            if (hit.collider.gameObject.name.Equals("Player"))
+            {
+                bSeePlayer = true;
+            }
+            else
+            {
+                bSeePlayer = false;
+            }
+
+            Debug.DrawLine(castPoint.position, hit.point, Color.yellow);
+        }
+        else
+        {
+            Debug.DrawLine(castPoint.position, endPosition, Color.blue);
+        }
+
+        return bSeePlayer;
+    }
+
+    /* Function to start running from player */
+    private void RunFromPlayer()
+    {
+        currentState = STATE_MACHINE[3];
+    }
+
+    /* Function to stop running from player */
+    private void StopRunFromPlayer()
+    {
+        currentState = STATE_MACHINE[2];                                        // Return to walk state
+    }
+
+    /* Function to flip sprite */
     private void FlipSprite()
     {
         bSpriteFacingRight = !bSpriteFacingRight;           // Flip facing
@@ -177,39 +231,19 @@ public class MachineStateVillager : MonoBehaviour
     /* Function to detect collision with walls */
     void OnCollisionEnter2D(Collision2D pCollision)
     {
-        if (pCollision.otherCollider == boxColliders[0])
+        /* If the colliding game object is not the player, then proceed */
+        if (!pCollision.transform.gameObject.name.Equals("Player"))
         {
-            /* If the colliding game object is not the player, then proceed */
-            if (!pCollision.transform.gameObject.name.Equals("Player"))
-            {
-                /* Inverse move direction */
-                horizontalMove *= (-1);
-                verticalMove *= (-1);
+            /* Inverse move direction */
+            horizontalMove *= (-1);
+            verticalMove *= (-1);
 
-                bCollision = true;      // Change boolean to true to change direction of the villager
-            }
-            else
-            {
-                Physics2D.IgnoreCollision(pCollision.collider, pCollision.otherCollider);   // Ignoring collision with player
-            }
+            bCollision = true;      // Change boolean to true to change direction of the villager
         }
-        else if (pCollision.otherCollider == boxColliders[1])
+        else
         {
-            /* If the villager see the player in his field of view, then he runs ! */
-            if (pCollision.gameObject == player)
-            {
-                currentState = STATE_MACHINE[3];
-            }
-            /* Else is just a wall so change only direction and keep mooving */
-            else
-            {
-                horizontalMove *= (-1);
-                verticalMove *= (-1);
-
-                bCollision = true;
-            }
-        }
-        
+            Physics2D.IgnoreCollision(pCollision.collider, pCollision.otherCollider);   // Ignoring collision with player
+        }    
     }
 
     void OnCollisionExit2D(Collision2D collision)

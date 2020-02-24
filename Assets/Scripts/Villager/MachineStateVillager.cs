@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class MachineStateVillager : MonoBehaviour
 {
+    // TO DO : Create sight of view
+
     public Rigidbody2D villagerBody2D;                  // RigidBody2D of the villager
     public BoxCollider2D[] boxColliders;                // Table of all BoxCollider2D of the villager
     public Animator villagerAnimator;                   // Animator of the villager

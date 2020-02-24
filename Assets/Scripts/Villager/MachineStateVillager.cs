@@ -35,7 +35,7 @@ public class MachineStateVillager : MonoBehaviour
 
         player = GameObject.Find("Player");                                 // Keep player in memory
 
-        castPoint = GameObject.Find("CastPoint").transform;                 // Find castPoint on scene
+        castPoint = transform.GetChild(0).gameObject.transform;             // Find castPoint on scene
 
         STATE_MACHINE = new string[] { "", "walk", "change", "afraid" };    // Initialize state machine
         currentState = STATE_MACHINE[0];                                    // By default state of villager is empty

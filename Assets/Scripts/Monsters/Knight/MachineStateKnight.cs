@@ -6,54 +6,75 @@ using UnityEngine;
 public class MachineStateKnight : MonoBehaviour
 {
     public Rigidbody2D knightBody2D;                    // RigidBody2D of the knight
-    public BoxCollider2D[] boxColliders;                // Table of all BoxCollider2D of the knight
-    //public Animator knightAnimator;                   // Animator of the knight
+    //public Animator knightAnimator;                     // Animator of the knight
 
     public GameObject player;                           // Player Game Object
+
+    public Transform castPoint;                         // Transform to give a view to knight
+    public float viewSight = 3.5f;                        // Distance of view of the knight
+    private bool bIsAgro = false;
+    private bool bIsSearching = false;
 
     public string[] STATE_MACHINE;                      // State machine for knight
     public string currentState;                         // Value to verify current state of knight
 
-    private float horizontalMove = 0.1f;                // Float to handling horizontal moves of the sprite
-    private float verticalMove = 0.1f;                  // Float to handling vertical moves of the sprite
+    public float horizontalMove = 0.1f;                // Float to handling horizontal moves of the sprite
+    public float verticalMove = 0.1f;                  // Float to handling vertical moves of the sprite
     public float moveSpeed;                             // Move speed multiply by horizontalMoves or verticalMoves to create velocity 
     public float INITIAL_SPEED = 2f;                    // Standard speed of the knight
 
     bool bCollision = false;                            // Boolean to detect collision
     private bool bSpriteFacingRight = true;             // Boolean to flip sprite on the good direction
 
-    private float sightView = 5f;                       // Float to specifiy distance of view of the knight
-    public GameObject castPoint;                       // Cast point for the rayline using to create sigh view of the knight
-
-    private bool bIsAttack = false;                     // Boolean to change animation of villager when he's afraid by the vampire
-    private bool bIsWalking= false;                     // 
+    private bool bIsAfraid = false;                     // Boolean to change animation of knight when he's afraid by the vampire
+    private bool bIsWalking = false;                     // 
     private bool bIsIdle = false;                       // 
 
     void Start()
     {
-        knightBody2D = gameObject.GetComponent<Rigidbody2D>();              // Get RigidBody2D of the knight 
-        boxColliders = gameObject.GetComponents<BoxCollider2D>();           // Find all colliders of the knight
-
-        //knightAnimator = gameObject.GetComponent<Animator>();             // Get Animator attached to the villager
+        knightBody2D = gameObject.GetComponent<Rigidbody2D>();            // Get RigidBody2D of the knight 
+        //knightAnimator = gameObject.GetComponent<Animator>();             // Get Animator attached to the knight
 
         player = GameObject.Find("Player");                                 // Keep player in memory
 
+        castPoint = transform.GetChild(0).gameObject.transform;             // Find castPoint on scene
+
         STATE_MACHINE = new string[] { "", "walk", "change", "attack" };    // Initialize state machine
-        currentState = STATE_MACHINE[0];                                    // By default state of villager is empty
+        currentState = STATE_MACHINE[0];                                    // By default state of knight is empty
 
-        moveSpeed = INITIAL_SPEED;                                          // Standard move speed of the villager
-
-        castPoint = GameObject.Find("CastPoint");
+        moveSpeed = INITIAL_SPEED;                                          // Standard move speed of the knight
     }
 
     void Update()
     {
+        /* If knight see the player, start running from him ! */
+        if (CanSeePlayer(viewSight))
+        {
+            bIsAgro = true;
+        }
+        else
+        {
+            if (bIsAgro)
+            {
+                if (!bIsSearching)
+                {
+                    bIsSearching = true;
+                    Invoke("StopAgroPlayer", 5);
+                }
+            }
+        }
+
+        if (bIsAgro)
+        {
+            AgroPlayer();
+        }
+
         /* Flipping sprite */
-        if (horizontalMove < 0 && bSpriteFacingRight)
+        if (knightBody2D.velocity.x > 0 && !bSpriteFacingRight)
         {
             FlipSprite();
         }
-        else if (horizontalMove > 0 && !bSpriteFacingRight)
+        else if (knightBody2D.velocity.x < 0 && bSpriteFacingRight)
         {
             FlipSprite();
         }
@@ -66,7 +87,7 @@ public class MachineStateKnight : MonoBehaviour
         }
         else if (currentState == STATE_MACHINE[1])      // Walk state
         {
-            //bIsAfraid = false;                          // Is afraid boolean passed to false for animation
+            bIsAfraid = false;                          // Is afraid boolean passed to false for animation
             bIsWalking = true;
             bIsIdle = false;
 
@@ -77,23 +98,18 @@ public class MachineStateKnight : MonoBehaviour
             {
                 bIsIdle = true;
 
-                /* Stop the villager by setting velocity to 0 */
+                /* Stop the knight by setting velocity to 0 */
                 Vector2 newVelocity = new Vector2();
                 newVelocity.x = 0;
                 newVelocity.y = 0;
                 knightBody2D.velocity = newVelocity;
 
-                currentState = STATE_MACHINE[2];            // Change state of the villager to change direction
-            }
-
-            if (CanSeePlayer(sightView))
-            {
-                currentState = STATE_MACHINE[3];
+                currentState = STATE_MACHINE[2];            // Change state of the knight to change direction
             }
         }
         else if (currentState == STATE_MACHINE[2])      // Change direction state
         {
-            //bIsAfraid = false;                                                      // Is afraid boolean passed to false for animation
+            bIsAfraid = false;                                                      // Is afraid boolean passed to false for animation
             bIsWalking = true;
             bIsIdle = false;
 
@@ -114,113 +130,115 @@ public class MachineStateKnight : MonoBehaviour
 
             currentState = STATE_MACHINE[1];                                        // Change state to walk
         }
-        else if (currentState == STATE_MACHINE[3])      // Attack state
+        else if (currentState == STATE_MACHINE[3])      // Afraid state
         {
-            //bIsAfraid = true;                                                       // Is afraid boolean passed to true for animation
-            bIsWalking = false;
-            bIsIdle = false;
+            if (transform.position.x < player.transform.position.x)
+            {
+                horizontalMove = 0.1f;
+            }
+            else if (transform.position.x > player.transform.position.x)
+            {
+                horizontalMove = -0.1f;
+            }
 
-            ChasePlayer();
+            if (transform.position.y < player.transform.position.y)
+            {
+                verticalMove = 0.1f;
+            }
+            else if (transform.position.y > player.transform.position.y)
+            {
+                verticalMove = -0.1f;
+            }
+
+            Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
+
+            newVelocity.x = horizontalMove * moveSpeed * 3;    // Affect X velocity
+            newVelocity.y = verticalMove * moveSpeed * 3;      // Affect Y velocity
+
+            knightBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
             //currentState = STATE_MACHINE[1];                                        // Return to walk state
         }
         /* End Handling State Machine */
 
         /* Handling animations */
-        /*if (bIsAfraid)
-        {
-            villagerAnimator.SetBool("IsAfraid", true);
-        }
-        else
-        {
-            villagerAnimator.SetBool("IsAfraid", false);
-        }
+        //if (bIsAfraid)
+        //{
+        //    knightAnimator.SetBool("IsAfraid", true);
+        //}
+        //else
+        //{
+        //    knightAnimator.SetBool("IsAfraid", false);
+        //}
 
-        if (bIsWalking)
-        {
-            villagerAnimator.SetBool("IsWalking", true);
-        }
-        else
-        {
-            villagerAnimator.SetBool("IsWalking", false);
-        }
+        //if (bIsWalking)
+        //{
+        //    knightAnimator.SetBool("IsWalking", true);
+        //}
+        //else
+        //{
+        //    knightAnimator.SetBool("IsWalking", false);
+        //}
 
-        if (bIsIdle)
-        {
-            villagerAnimator.SetBool("IsIdle", true);
-        }
-        else
-        {
-            villagerAnimator.SetBool("IsIdle", false);
-        }*/
+        //if (bIsIdle)
+        //{
+        //    knightAnimator.SetBool("IsIdle", true);
+        //}
+        //else
+        //{
+        //    knightAnimator.SetBool("IsIdle", false);
+        //}
         /* End Handling animations */
     }
 
     private bool CanSeePlayer(float pDistance)
     {
-        bool bCanSeePlayer = false;
+        bool bSeePlayer = false;
         float castDistance = pDistance;
 
-        Vector2 endPosition = castPoint.transform.position + Vector3.right * castDistance;
-        RaycastHit2D hit = Physics2D.Linecast(castPoint.transform.position, endPosition, 1 << LayerMask.NameToLayer("Default"));
+        if (!bSpriteFacingRight)
+        {
+            castDistance = -pDistance;
+        }
+
+        Vector2 endPosition = castPoint.position + Vector3.right * castDistance;
+        RaycastHit2D hit = Physics2D.Linecast(castPoint.position, endPosition, 1 << LayerMask.NameToLayer("Default"));
 
         if (hit.collider != null)
         {
-            if (hit.collider.gameObject.name == "Player")
+            if (hit.collider.gameObject.name.Equals("Player"))
             {
-                bCanSeePlayer = true;
+                bSeePlayer = true;
             }
             else
             {
-                bCanSeePlayer = false;
+                bSeePlayer = false;
             }
+
+            Debug.DrawLine(castPoint.position, hit.point, Color.yellow);
+        }
+        else
+        {
+            Debug.DrawLine(castPoint.position, endPosition, Color.blue);
         }
 
-        return bCanSeePlayer;
+        return bSeePlayer;
     }
 
-    private void ChasePlayer()
+    /* Function to start running from player */
+    private void AgroPlayer()
     {
-        Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
-
-        float destinationX = player.transform.position.x;
-        float destinationY = player.transform.position.y;
-
-        if (transform.position.x < destinationX)
-        {
-            if (Math.Sign(horizontalMove) == -1)
-            {
-                horizontalMove *= (-1);
-            }
-        }
-        else
-        {
-            if (Math.Sign(horizontalMove) == 1)
-            {
-                horizontalMove *= (-1);
-            }
-        }
-
-        if (transform.position.y < destinationY)
-        {
-            if (Math.Sign(verticalMove) == -1)
-            {
-                verticalMove *= (-1);
-            }
-        }
-        else
-        {
-            if (Math.Sign(verticalMove) == 1)
-            {
-                verticalMove *= (-1);
-            }
-        }
-
-        newVelocity.x = horizontalMove * moveSpeed * 3;                         // Affect X velocity
-        newVelocity.y = verticalMove * moveSpeed * 3;                           // Affect Y velocity
-
-        knightBody2D.velocity = newVelocity;                                    // Affect new velocity to Body2D
+        currentState = STATE_MACHINE[3];
     }
 
+    /* Function to stop running from player */
+    private void StopAgroPlayer()
+    {
+        bIsAgro = false;
+        bIsSearching = false;
+        currentState = STATE_MACHINE[2];                                        // Return to change direction state
+    }
+
+    /* Function to flip sprite */
     private void FlipSprite()
     {
         bSpriteFacingRight = !bSpriteFacingRight;           // Flip facing
@@ -229,48 +247,28 @@ public class MachineStateKnight : MonoBehaviour
         Vector3 scaling = transform.localScale;             // Get local scale of the transform
         scaling.x *= -1;                                    // Invert direction
         transform.localScale = scaling;                     // Affect new direction to the local scale of the transform
-    }  
+    }
 
     /* Function to detect collision with walls */
     void OnCollisionEnter2D(Collision2D pCollision)
     {
-        if (pCollision.otherCollider == boxColliders[0])
+        /* If the colliding game object is not the player, then proceed */
+        if (!pCollision.transform.gameObject.name.Equals("Player"))
         {
-            /* If the colliding game object is not the player, then proceed */
-            if (!pCollision.transform.gameObject.name.Equals("Player"))
-            {
-                /* Inverse move direction */
-                horizontalMove *= (-1);
-                verticalMove *= (-1);
+            /* Inverse move direction */
+            horizontalMove *= (-1);
+            verticalMove *= (-1);
 
-                bCollision = true;      // Change boolean to true to change direction of the villager
-            }
-            else
-            {
-                Physics2D.IgnoreCollision(pCollision.collider, pCollision.otherCollider);   // Ignoring collision with player
-            }
+            bCollision = true;      // Change boolean to true to change direction of the knight
         }
-        //else if (pCollision.otherCollider == boxColliders[1])
-        //{
-        //    /* If the villager see the player in his field of view, then he runs ! */
-        //    if (pCollision.gameObject == player)
-        //    {
-        //        currentState = STATE_MACHINE[3];
-        //    }
-        //    /* Else is just a wall so change only direction and keep mooving */
-        //    else
-        //    {
-        //        horizontalMove *= (-1);
-        //        verticalMove *= (-1);
-
-        //        bCollision = true;
-        //    }
-        //}
-        
+        else
+        {
+            Physics2D.IgnoreCollision(pCollision.collider, pCollision.otherCollider);   // Ignoring collision with player
+        }
     }
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        bCollision = false;   // Change boolean to false to stop change direction of the villager
+        bCollision = false;   // Change boolean to false to stop change direction of the knight
     }
 }

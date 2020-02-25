@@ -4,22 +4,22 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-    public Animator playerAnimator;
+    public Animator playerAnimator;     // Animator of the player
 
-    public Transform attackPoint;
-    public float attackRange;
-    public LayerMask attackLayer;
+    public Transform attackPoint;       // Specific transform for the attack
+    public float attackRange;           // Radius of the attack
+    public LayerMask attackLayer;       // Layer of the attack
 
     public bool bIsBitting;            // Boolean to detect where player is bitting
 
     void Start()
     {
-        playerAnimator = GetComponent<Animator>();
+        playerAnimator = GetComponent<Animator>();                      // Get animator of the player
 
-        attackPoint = transform.GetChild(0).gameObject.transform;
-        attackRange = 0.2f;
+        attackPoint = transform.GetChild(0).gameObject.transform;       // Get transform for attack point
+        attackRange = 0.2f;                                             // Set attack radius
 
-        bIsBitting = false;
+        bIsBitting = false;                                             // By default set boolean to false
     }
 
     void Update()
@@ -27,12 +27,12 @@ public class PlayerAttack : MonoBehaviour
         /* Input for bitting villagers */
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            bIsBitting = true;
-            Attack();
+            bIsBitting = true;      // Pass boolean to true
+            Attack();               // Attack 
         }
         else
         {
-            bIsBitting = false;
+            bIsBitting = false;     // Pass boolean to false
         }
 
 
@@ -50,10 +50,12 @@ public class PlayerAttack : MonoBehaviour
 
     private void Attack()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, attackLayer);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, attackLayer);     // Get all colliders hitting by the circle of attack point
 
+        /* Foreach function to handling every collisions with Attack circle */
         foreach (Collider2D collider in hits)
         {
+            /* If game object attached to the collider is a villager then proceed */
             if (collider.gameObject.tag.Equals("Villager"))
             {
                 Debug.Log("We hit a villager !");
@@ -61,6 +63,7 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
+    /* Function to display Attack circle */
     private void OnDrawGizmosSelected()
     {
         if (attackPoint == null)

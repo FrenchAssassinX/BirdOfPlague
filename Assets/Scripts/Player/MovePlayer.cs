@@ -12,7 +12,6 @@ public class MovePlayer : MonoBehaviour
     public float moveSpeed = 4f;                // Move speed multiply by horizontalMoves or verticalMoves to create velocity 
 
     private bool bSpriteFacingRight = true;     // Boolean to flip sprite on the good direction
-    public bool bIsBitting = false;             // Boolean to detect where player is bitting
 
     void Start()
     {
@@ -25,16 +24,6 @@ public class MovePlayer : MonoBehaviour
         horizontalMove = Input.GetAxis("Horizontal");       // Get x moves with inputs
         verticalMove = Input.GetAxis("Vertical");           // Get y moves with inputs
 
-        /* Input for bitting villagers */
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            bIsBitting = true;
-        }
-        else
-        {
-            bIsBitting = false;
-        }
-
         /* Start Animator settings */
         /* Running animation */
         if (Mathf.Abs(horizontalMove) > 0 || Mathf.Abs(verticalMove) > 0)
@@ -45,16 +34,6 @@ public class MovePlayer : MonoBehaviour
         {
             animator.SetBool("IsRunning", false);
         }
-        /* Bitting animation */
-        if (bIsBitting)
-        {
-            animator.SetBool("IsBitting", true);
-        }
-        else
-        {
-            animator.SetBool("IsBitting", false);
-        }
-        /* End Animator settings */
 
         /* Flipping sprite */
         if (horizontalMove < 0 && bSpriteFacingRight)

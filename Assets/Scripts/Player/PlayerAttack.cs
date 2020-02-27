@@ -12,6 +12,8 @@ public class PlayerAttack : MonoBehaviour
 
     public bool bIsBitting;            // Boolean to detect where player is bitting
 
+    private float bittingDamage;        // Quantity of damages caused by a bite of the player         
+
     void Start()
     {
         playerAnimator = GetComponent<Animator>();                      // Get animator of the player
@@ -20,6 +22,8 @@ public class PlayerAttack : MonoBehaviour
         attackRange = 0.2f;                                             // Set attack radius
 
         bIsBitting = false;                                             // By default set boolean to false
+
+        bittingDamage = 1f;
     }
 
     void Update()
@@ -58,7 +62,7 @@ public class PlayerAttack : MonoBehaviour
             /* If game object attached to the collider is a villager then proceed */
             if (collider.gameObject.tag.Equals("Villager"))
             {
-                Debug.Log("We hit a villager !");
+                collider.gameObject.GetComponent<MachineStateVillager>().lifePoints -= bittingDamage;
             }
         }
     }

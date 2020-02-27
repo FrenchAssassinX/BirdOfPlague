@@ -28,23 +28,30 @@ public class MachineStateVillager : MonoBehaviour
     private bool bIsWalking= false;                     // 
     private bool bIsIdle = false;                       // 
 
+    public float lifePoints = 1f;                      // Life points of the villager
+
     void Start()
     {
-        villagerBody2D = gameObject.GetComponent<Rigidbody2D>();            // Get RigidBody2D of the villager 
-        villagerAnimator = gameObject.GetComponent<Animator>();             // Get Animator attached to the villager
+        villagerBody2D = gameObject.GetComponent<Rigidbody2D>();                    // Get RigidBody2D of the villager 
+        villagerAnimator = gameObject.GetComponent<Animator>();                     // Get Animator attached to the villager
 
-        player = GameObject.Find("Player");                                 // Keep player in memory
+        player = GameObject.Find("Player");                                         // Keep player in memory
 
-        castPoint = transform.GetChild(0).gameObject.transform;             // Find castPoint on scene
+        castPoint = transform.GetChild(0).gameObject.transform;                     // Find castPoint on scene
 
-        STATE_MACHINE = new string[] { "", "walk", "change", "afraid" };    // Initialize state machine
-        currentState = STATE_MACHINE[0];                                    // By default state of villager is empty
+        STATE_MACHINE = new string[] { "", "walk", "change", "afraid", "dead" };    // Initialize state machine
+        currentState = STATE_MACHINE[0];                                            // By default state of villager is empty
 
-        moveSpeed = INITIAL_SPEED;                                          // Standard move speed of the villager
+        moveSpeed = INITIAL_SPEED;                                                  // Standard move speed of the villager
     }
 
     void Update()
     {
+        if (lifePoints <= 0)
+        {
+            currentState = STATE_MACHINE[4];
+        }
+
         /* If villager see the player, start running from him ! */
         if (CanSeePlayer(viewSight))
         {
@@ -138,6 +145,10 @@ public class MachineStateVillager : MonoBehaviour
 
             Invoke("StopRunFromPlayer", 5);
             currentState = STATE_MACHINE[1];                                        // Return to walk state
+        }
+        else if (currentState == STATE_MACHINE[4])  // Dead state
+        {
+            Destroy(gameObject);
         }
         /* End Handling State Machine */
 

@@ -26,7 +26,7 @@ public class MachineStateKnight : MonoBehaviour
     bool bCollision = false;                            // Boolean to detect collision
     private bool bSpriteFacingRight = true;             // Boolean to flip sprite on the good direction
 
-    private bool bIsAttacking = false;                  // Boolean to change animation of knight when he's afraid by the vampire
+    public bool bIsAttacking = false;                  // Boolean to change animation of knight when he's afraid by the vampire
     private bool bIsWalking = false;                    // 
     private bool bIsIdle = false;                       // 
 
@@ -132,6 +132,7 @@ public class MachineStateKnight : MonoBehaviour
         }
         else if (currentState == STATE_MACHINE[3])      // Afraid state
         {
+            /* Handling moves of the knight based on the position of the player */
             if (transform.position.x < player.transform.position.x)
             {
                 horizontalMove = 0.1f;
@@ -149,14 +150,27 @@ public class MachineStateKnight : MonoBehaviour
             {
                 verticalMove = -0.1f;
             }
+            /* End handling moves */
 
-            Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
+            Vector2 newVelocity = new Vector2();                // Vector2 for new velocity
 
-            newVelocity.x = horizontalMove * moveSpeed * 3;    // Affect X velocity
-            newVelocity.y = verticalMove * moveSpeed * 3;      // Affect Y velocity
+            newVelocity.x = horizontalMove * moveSpeed * 3;     // Affect X velocity
+            newVelocity.y = verticalMove * moveSpeed * 3;       // Affect Y velocity
 
-            knightBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
-            //currentState = STATE_MACHINE[1];                                        // Return to walk state
+            knightBody2D.velocity = newVelocity;                // Affect new velocity to Body2D
+
+            if (Vector2.Distance(player.transform.position, transform.position) < 0.5f &&
+                    gameObject.GetComponent<AttackKnight>().canAttack)
+            {
+                Vector2 stopVelocity = new Vector2();           // Vector2 for new velocity
+
+                stopVelocity.x = 0;                             // Affect X velocity
+                stopVelocity.y = 0;                             // Affect Y velocity
+
+                knightBody2D.velocity = stopVelocity;           // Affect new velocity to Body2D
+
+                bIsAttacking = true;
+            }
         }
         /* End Handling State Machine */
 

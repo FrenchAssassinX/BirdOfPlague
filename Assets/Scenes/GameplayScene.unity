@@ -371,13 +371,14 @@ GameObject:
   - component: {fileID: 332826724}
   - component: {fileID: 332826726}
   - component: {fileID: 332826725}
+  - component: {fileID: 332826731}
   m_Layer: 0
   m_Name: Knight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!95 &332826724
 Animator:
   serializedVersion: 3
@@ -420,6 +421,7 @@ MonoBehaviour:
   verticalMove: 0.1
   moveSpeed: 0
   INITIAL_SPEED: 2
+  bIsAttacking: 0
 --- !u!114 &332826726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -540,9 +542,27 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1610053373}
+  - {fileID: 440526875}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &332826731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 332826723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 316baec388e7bc048bfd594587c1a551, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackPoint: {fileID: 0}
+  attackRange: 0
+  attackLayer:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &389766745
 GameObject:
   m_ObjectHideFlags: 0
@@ -553,12 +573,13 @@ GameObject:
   m_Component:
   - component: {fileID: 389766747}
   - component: {fileID: 389766746}
-  - component: {fileID: 389766748}
-  - component: {fileID: 389766751}
   - component: {fileID: 389766749}
   - component: {fileID: 389766750}
   - component: {fileID: 389766752}
+  - component: {fileID: 389766748}
+  - component: {fileID: 389766751}
   - component: {fileID: 389766753}
+  - component: {fileID: 389766754}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -742,6 +763,49 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   bIsBitting: 0
+--- !u!114 &389766754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389766745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c3d40d0732130f4991fabf8cfb50b62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerLifePoints: 0
+--- !u!1 &440526874
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 440526875}
+  m_Layer: 0
+  m_Name: AttackPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &440526875
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 440526874}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.26, y: -0.237, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 332826730}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -7392,7 +7456,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!61 &1943527495
 BoxCollider2D:
   m_ObjectHideFlags: 0

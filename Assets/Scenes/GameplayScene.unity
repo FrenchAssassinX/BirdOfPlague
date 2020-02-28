@@ -378,7 +378,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!95 &332826724
 Animator:
   serializedVersion: 3
@@ -563,6 +563,9 @@ MonoBehaviour:
   attackLayer:
     serializedVersion: 2
     m_Bits: 1
+  TIMER_ATTACK_VALUE: 100
+  timerAttack: 0
+  canAttack: 0
 --- !u!1 &389766745
 GameObject:
   m_ObjectHideFlags: 0
@@ -7456,7 +7459,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &1943527495
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7474,7 +7477,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1, y: 0.765625}
     newSize: {x: 0.32, y: 0.32}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -7582,6 +7585,8 @@ MonoBehaviour:
   villagerBody2D: {fileID: 0}
   villagerAnimator: {fileID: 0}
   player: {fileID: 0}
+  prefabDeadEffect: {fileID: 8596070062676909114, guid: 9643c2defea53104597687735ea89e79,
+    type: 3}
   castPoint: {fileID: 0}
   viewSight: 3
   STATE_MACHINE: []

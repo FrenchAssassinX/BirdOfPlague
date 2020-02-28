@@ -5,10 +5,12 @@ using UnityEngine;
 public class SpecsPlayer : MonoBehaviour
 {
     public float playerLifePoints;      // Life Points of the player
+    private Animator playerAnimator;    // Animator of the player
 
     void Start()
     {
         playerLifePoints = 2f;
+        playerAnimator = GetComponent<Animator>();
     }
 
     
@@ -18,7 +20,12 @@ public class SpecsPlayer : MonoBehaviour
         {
             Debug.Log("**** GAME OVER ****");
 
-            Destroy(gameObject);
+            playerAnimator.SetBool("IsDead", true);
         }
+    }
+
+    public void KillPlayer()
+    {
+        Destroy(gameObject);
     }
 }

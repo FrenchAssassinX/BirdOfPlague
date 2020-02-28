@@ -10,6 +10,8 @@ public class MachineStateVillager : MonoBehaviour
 
     public GameObject player;                           // Player Game Object
 
+    public GameObject prefabDeadEffect;                 // Prefab to play dead effect on sprite dead
+
     public Transform castPoint;                         // Transform to give a view to villager
     public float viewSight = 3f;                        // Distance of view of the villager
 
@@ -27,6 +29,7 @@ public class MachineStateVillager : MonoBehaviour
     private bool bIsAfraid = false;                     // Boolean to change animation of villager when he's afraid by the vampire
     private bool bIsWalking= false;                     // 
     private bool bIsIdle = false;                       // 
+    private bool bIsDead = false;                       // 
 
     public float lifePoints = 1f;                      // Life points of the villager
 
@@ -49,6 +52,7 @@ public class MachineStateVillager : MonoBehaviour
     {
         if (lifePoints <= 0)
         {
+            bIsDead = true;
             currentState = STATE_MACHINE[4];
         }
 
@@ -148,7 +152,14 @@ public class MachineStateVillager : MonoBehaviour
         }
         else if (currentState == STATE_MACHINE[4])  // Dead state
         {
-            Destroy(gameObject);
+            Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
+
+            newVelocity.x = 0;                                                      // Affect X velocity
+            newVelocity.y = 0;                                                      // Affect Y velocity
+
+            villagerBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
+
+            GetComponent<SpriteRenderer>().color = Color.red;
         }
         /* End Handling State Machine */
 
@@ -178,6 +189,15 @@ public class MachineStateVillager : MonoBehaviour
         else
         {
             villagerAnimator.SetBool("IsIdle", false);
+        }
+
+        if (bIsDead)
+        {
+            villagerAnimator.SetBool("IsDead", true);
+        }
+        else
+        {
+            villagerAnimator.SetBool("IsDead", false);
         }
         /* End Handling animations */
     }
@@ -228,6 +248,11 @@ public class MachineStateVillager : MonoBehaviour
         currentState = STATE_MACHINE[2];                                        // Return to walk state
     }
 
+    public void Dying()
+    {
+        Destroy(gameObject);
+    }
+
     /* Function to flip sprite */
     private void FlipSprite()
     {
@@ -237,7 +262,7 @@ public class MachineStateVillager : MonoBehaviour
         Vector3 scaling = transform.localScale;             // Get local scale of the transform
         scaling.x *= -1;                                    // Invert direction
         transform.localScale = scaling;                     // Affect new direction to the local scale of the transform
-    }  
+    }
 
     /* Function to detect collision with walls */
     void OnCollisionEnter2D(Collision2D pCollision)

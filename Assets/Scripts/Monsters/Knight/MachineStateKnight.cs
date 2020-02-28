@@ -130,46 +130,49 @@ public class MachineStateKnight : MonoBehaviour
 
             currentState = STATE_MACHINE[1];                                        // Change state to walk
         }
-        else if (currentState == STATE_MACHINE[3])      // Afraid state
+        else if (currentState == STATE_MACHINE[3])      // Attack state
         {
-            /* Handling moves of the knight based on the position of the player */
-            if (transform.position.x < player.transform.position.x)
+            if (player != null)
             {
-                horizontalMove = 0.1f;
-            }
-            else if (transform.position.x > player.transform.position.x)
-            {
-                horizontalMove = -0.1f;
-            }
+                /* Handling moves of the knight based on the position of the player */
+                if (transform.position.x < player.transform.position.x)
+                {
+                    horizontalMove = 0.1f;
+                }
+                else if (transform.position.x > player.transform.position.x)
+                {
+                    horizontalMove = -0.1f;
+                }
 
-            if (transform.position.y < player.transform.position.y)
-            {
-                verticalMove = 0.1f;
-            }
-            else if (transform.position.y > player.transform.position.y)
-            {
-                verticalMove = -0.1f;
-            }
-            /* End handling moves */
+                if (transform.position.y < player.transform.position.y)
+                {
+                    verticalMove = 0.1f;
+                }
+                else if (transform.position.y > player.transform.position.y)
+                {
+                    verticalMove = -0.1f;
+                }
+                /* End handling moves */
 
-            Vector2 newVelocity = new Vector2();                // Vector2 for new velocity
+                Vector2 newVelocity = new Vector2();                // Vector2 for new velocity
 
-            newVelocity.x = horizontalMove * moveSpeed * 3;     // Affect X velocity
-            newVelocity.y = verticalMove * moveSpeed * 3;       // Affect Y velocity
+                newVelocity.x = horizontalMove * moveSpeed * 3;     // Affect X velocity
+                newVelocity.y = verticalMove * moveSpeed * 3;       // Affect Y velocity
 
-            knightBody2D.velocity = newVelocity;                // Affect new velocity to Body2D
+                knightBody2D.velocity = newVelocity;                // Affect new velocity to Body2D
 
-            if (Vector2.Distance(player.transform.position, transform.position) < 0.5f &&
-                    gameObject.GetComponent<AttackKnight>().canAttack)
-            {
-                Vector2 stopVelocity = new Vector2();           // Vector2 for new velocity
+                if (Vector2.Distance(player.transform.position, transform.position) < 0.5f &&
+                        gameObject.GetComponent<AttackKnight>().canAttack)
+                {
+                    Vector2 stopVelocity = new Vector2();           // Vector2 for new velocity
 
-                stopVelocity.x = 0;                             // Affect X velocity
-                stopVelocity.y = 0;                             // Affect Y velocity
+                    stopVelocity.x = 0;                             // Affect X velocity
+                    stopVelocity.y = 0;                             // Affect Y velocity
 
-                knightBody2D.velocity = stopVelocity;           // Affect new velocity to Body2D
+                    knightBody2D.velocity = stopVelocity;           // Affect new velocity to Body2D
 
-                bIsAttacking = true;
+                    bIsAttacking = true;
+                }
             }
         }
         /* End Handling State Machine */

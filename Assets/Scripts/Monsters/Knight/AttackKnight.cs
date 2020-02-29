@@ -47,12 +47,8 @@ public class AttackKnight : MonoBehaviour
         {
             if (collider.gameObject.name.Equals("Player"))
             {
-                Debug.Log(gameObject.name + " hit " + collider.gameObject.name);
-
                 collider.gameObject.GetComponent<SpecsPlayer>().playerLifePoints -= knightDamage;
 
-                Debug.Log(collider.gameObject.name + " life points : " + collider.gameObject.GetComponent<SpecsPlayer>().playerLifePoints);
-                
                 gameObject.GetComponent<MachineStateKnight>().bIsAttacking = false;
                 knightAnimator.SetBool("IsAttacking", gameObject.GetComponent<MachineStateKnight>().bIsAttacking);
                 gameObject.GetComponent<MachineStateKnight>().currentState = gameObject.GetComponent<MachineStateKnight>().STATE_MACHINE[2];

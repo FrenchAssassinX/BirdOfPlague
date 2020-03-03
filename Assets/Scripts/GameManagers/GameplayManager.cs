@@ -6,10 +6,17 @@ using UnityEngine.SceneManagement;
 public class GameplayManager : MonoBehaviour
 {
     private GameObject player;                  // Player game object
+    private GameObject gameOverManager;
+    private GameObject gameOverPanel;
 
     void Start()
     {
         player = GameObject.Find("Player");
+        gameOverManager = GameObject.Find("GameOverManager");
+        gameOverPanel = GameObject.Find("GameOverPanel");
+
+        gameOverManager.SetActive(false);
+        gameOverPanel.SetActive(false);
     }
 
     void Update()
@@ -17,12 +24,9 @@ public class GameplayManager : MonoBehaviour
         /* If player is dead, go to game over scene */
         if (player == null)
         {
-            GoToGameOverScene();
+            gameOverManager.SetActive(true);
+            gameOverPanel.SetActive(true);
         }
     }
 
-    public void GoToGameOverScene()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-    }
 }

@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class MachineStateVillager : MonoBehaviour
 {
+    public GameObject emote;
+
     public Rigidbody2D villagerBody2D;                  // RigidBody2D of the villager
     public Animator villagerAnimator;                   // Animator of the villager
 
@@ -35,6 +37,8 @@ public class MachineStateVillager : MonoBehaviour
 
     void Start()
     {
+        emote = transform.GetChild(1).gameObject;
+
         villagerBody2D = gameObject.GetComponent<Rigidbody2D>();                    // Get RigidBody2D of the villager 
         villagerAnimator = gameObject.GetComponent<Animator>();                     // Get Animator attached to the villager
 
@@ -46,6 +50,8 @@ public class MachineStateVillager : MonoBehaviour
         currentState = STATE_MACHINE[0];                                            // By default state of villager is empty
 
         moveSpeed = INITIAL_SPEED;                                                  // Standard move speed of the villager
+
+        emote.SetActive(false);
     }
 
     void Update()
@@ -240,12 +246,14 @@ public class MachineStateVillager : MonoBehaviour
     private void RunFromPlayer()
     {
         currentState = STATE_MACHINE[3];
+        emote.SetActive(true);
     }
 
     /* Function to stop running from player */
     private void StopRunFromPlayer()
     {
         currentState = STATE_MACHINE[2];                                        // Return to walk state
+        emote.SetActive(false);
     }
 
     public void Dying()

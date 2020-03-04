@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class MachineStateKnight : MonoBehaviour
 {
+    public GameObject supriseEmote;                     // Game object to display emote
+
     public Rigidbody2D knightBody2D;                    // RigidBody2D of the knight
     public Animator knightAnimator;                     // Animator of the knight
 
@@ -32,6 +34,9 @@ public class MachineStateKnight : MonoBehaviour
 
     void Start()
     {
+        supriseEmote = transform.GetChild(2).gameObject;
+        supriseEmote.SetActive(false);
+
         knightBody2D = gameObject.GetComponent<Rigidbody2D>();            // Get RigidBody2D of the knight 
         knightAnimator = gameObject.GetComponent<Animator>();             // Get Animator attached to the knight
 
@@ -51,9 +56,12 @@ public class MachineStateKnight : MonoBehaviour
         if (CanSeePlayer(viewSight))
         {
             bIsAgro = true;
+            supriseEmote.SetActive(true);
         }
         else
         {
+            supriseEmote.SetActive(false);
+
             if (bIsAgro)
             {
                 if (!bIsSearching)

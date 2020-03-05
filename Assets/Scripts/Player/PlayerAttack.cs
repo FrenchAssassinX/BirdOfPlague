@@ -12,7 +12,9 @@ public class PlayerAttack : MonoBehaviour
 
     public bool bIsBitting;            // Boolean to detect where player is bitting
 
-    private float bittingDamage;        // Quantity of damages caused by a bite of the player         
+    private float bittingDamage;        // Quantity of damages caused by a bite of the player     
+
+    public GameObject target;
 
     void Start()
     {
@@ -62,9 +64,20 @@ public class PlayerAttack : MonoBehaviour
             /* If game object attached to the collider is a villager then proceed */
             if (collider.gameObject.tag.Equals("Villager"))
             {
+                target = collider.gameObject;
+
+                collider.gameObject.GetComponent<SpriteRenderer>().color = Color.clear;
+
                 collider.gameObject.GetComponent<MachineStateVillager>().lifePoints -= bittingDamage;
+
+                Invoke("ResetColor", 0.1f);
             }
         }
+    }
+
+    private void ResetColor()
+    {
+        target.GetComponent<SpriteRenderer>().color = Color.white;
     }
 
     /* Function to display Attack circle */

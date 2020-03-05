@@ -8,14 +8,14 @@ public class CollidersVillager : MonoBehaviour
 
     void Start()
     {
-        colliderVillager = this.gameObject.GetComponent<BoxCollider2D>();
+        colliderVillager = gameObject.GetComponent<BoxCollider2D>();
     }
 
     void Update()
     {
         /* Avoiding to rotate villager when colliding with rounded collider */
         Quaternion newRotation = new Quaternion(0f, 0f, 0f, 0f);
-        this.transform.localRotation = newRotation;
+        transform.localRotation = newRotation;
 
         /* Keep BoxCollider2D with the same position as the player */
         colliderVillager.transform.position = this.transform.position;

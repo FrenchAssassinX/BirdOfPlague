@@ -9364,7 +9364,7 @@ MonoBehaviour:
   currentState: 
   moveSpeed: 2
   INITIAL_SPEED: 2
-  lifePoints: 1
+  lifePoints: 10
 --- !u!114 &1943527500
 MonoBehaviour:
   m_ObjectHideFlags: 0

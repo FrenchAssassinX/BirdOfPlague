@@ -56,6 +56,8 @@ public class MachineStateVillager : MonoBehaviour
 
     void Update()
     {
+        float actualLifePoints = lifePoints;
+
         if (lifePoints <= 0)
         {
             bIsDead = true;

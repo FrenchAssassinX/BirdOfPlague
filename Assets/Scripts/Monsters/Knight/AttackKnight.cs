@@ -43,6 +43,8 @@ public class AttackKnight : MonoBehaviour
 
         Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.transform.position, attackRange, attackLayer);
 
+        FindObjectOfType<AudioManager>().Play("Sword");
+
         foreach (Collider2D collider in hits)
         {
             if (collider.gameObject.name.Equals("Player"))

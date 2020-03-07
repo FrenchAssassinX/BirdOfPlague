@@ -32,7 +32,7 @@ public class MachineStateVillager : MonoBehaviour
     private bool bIsWalking= false;                     // 
     private bool bIsIdle = false;                       // 
     private bool bIsDead = false;                       // 
-    private bool bIsContamined = false;                 // 
+    public bool bIsContamined = false;                 // 
 
     private float afraidSpeed = 10f;
 

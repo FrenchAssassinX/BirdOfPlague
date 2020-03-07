@@ -56,6 +56,8 @@ public class PlayerAttack : MonoBehaviour
 
     private void Attack()
     {
+        FindObjectOfType<AudioManager>().Play("PlayerBite");
+
         Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, attackLayer);     // Get all colliders hitting by the circle of attack point
 
         /* Foreach function to handling every collisions with Attack circle */
@@ -73,8 +75,6 @@ public class PlayerAttack : MonoBehaviour
                 Invoke("ResetColor", 0.1f);
             }
         }
-
-        FindObjectOfType<AudioManager>().Play("PlayerBite");
     }
 
     private void ResetColor()

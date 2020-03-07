@@ -16,6 +16,8 @@ public class AttackKnight : MonoBehaviour
     public float timerAttack;
     public bool canAttack;
 
+    public GameObject target;
+
     void Start()
     {
         knightAnimator = gameObject.GetComponent<Animator>();   // Get animator attached to the knight
@@ -49,8 +51,12 @@ public class AttackKnight : MonoBehaviour
         {
             if (collider.gameObject.name.Equals("Player"))
             {
+                target = collider.gameObject;
+
+                collider.gameObject.GetComponent<SpriteRenderer>().color = Color.clear;
                 collider.gameObject.GetComponent<SpecsPlayer>().playerLifePoints -= knightDamage;
                 FindObjectOfType<AudioManager>().Play("PlayerHurt");
+                Invoke("ResetColor", 0.1f);
 
                 gameObject.GetComponent<MachineStateKnight>().bIsAttacking = false;
                 knightAnimator.SetBool("IsAttacking", gameObject.GetComponent<MachineStateKnight>().bIsAttacking);
@@ -69,6 +75,11 @@ public class AttackKnight : MonoBehaviour
             canAttack = true;
             timerAttack = TIMER_ATTACK_VALUE;
         }
+    }
+
+    private void ResetColor()
+    {
+        target.GetComponent<SpriteRenderer>().color = Color.white;
     }
 
     /* Function to display Attack circle */

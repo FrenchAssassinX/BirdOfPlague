@@ -32,6 +32,8 @@ public class MachineStateKnight : MonoBehaviour
     private bool bIsWalking = false;                    // 
     private bool bIsIdle = false;                       // 
 
+    private float attackMoveSpeed = 7f;
+
     void Start()
     {
         supriseEmote = transform.GetChild(2).gameObject;
@@ -164,8 +166,8 @@ public class MachineStateKnight : MonoBehaviour
 
                 Vector2 newVelocity = new Vector2();                // Vector2 for new velocity
 
-                newVelocity.x = horizontalMove * moveSpeed * 3;     // Affect X velocity
-                newVelocity.y = verticalMove * moveSpeed * 3;       // Affect Y velocity
+                newVelocity.x = horizontalMove * moveSpeed * attackMoveSpeed;     // Affect X velocity
+                newVelocity.y = verticalMove * moveSpeed * attackMoveSpeed;       // Affect Y velocity
 
                 knightBody2D.velocity = newVelocity;                // Affect new velocity to Body2D
 

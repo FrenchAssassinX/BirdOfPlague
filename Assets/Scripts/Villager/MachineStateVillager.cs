@@ -34,6 +34,8 @@ public class MachineStateVillager : MonoBehaviour
     private bool bIsDead = false;                       // 
     private bool bIsContamined = false;                 // 
 
+    private float afraidSpeed = 10f;
+
     public float lifePoints = 1f;                      // Life points of the villager
 
     void Start()
@@ -148,11 +150,28 @@ public class MachineStateVillager : MonoBehaviour
 
             Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
 
-            horizontalMove *= (-1);                                                 // Invert horizontal move
-            verticalMove *= (-1);                                                   // Invert vertical move
+            /* Handling moves of the villager based on the position of the player */
+            if (transform.position.x < player.transform.position.x)
+            {
+                horizontalMove = 0.1f;
+            }
+            else if (transform.position.x > player.transform.position.x)
+            {
+                horizontalMove = -0.1f;
+            }
 
-            newVelocity.x = horizontalMove * moveSpeed * 3 * (float)Math.Cos(angle);    // Affect X velocity
-            newVelocity.y = verticalMove * moveSpeed * 3 * (float)Math.Sin(angle);      // Affect Y velocity
+            if (transform.position.y < player.transform.position.y)
+            {
+                verticalMove = 0.1f;
+            }
+            else if (transform.position.y > player.transform.position.y)
+            {
+                verticalMove = -0.1f;
+            }
+            /* End handling moves */
+
+            newVelocity.x = horizontalMove * moveSpeed * afraidSpeed * (float)Math.Cos(angle);    // Affect X velocity
+            newVelocity.y = verticalMove * moveSpeed * afraidSpeed * (float)Math.Sin(angle);      // Affect Y velocity
 
             villagerBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
 

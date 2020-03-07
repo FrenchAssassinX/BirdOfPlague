@@ -32,6 +32,7 @@ public class MachineStateVillager : MonoBehaviour
     private bool bIsWalking= false;                     // 
     private bool bIsIdle = false;                       // 
     private bool bIsDead = false;                       // 
+    private bool bIsContamined = false;                 // 
 
     public float lifePoints = 1f;                      // Life points of the villager
 
@@ -46,7 +47,7 @@ public class MachineStateVillager : MonoBehaviour
 
         castPoint = transform.GetChild(0).gameObject.transform;                     // Find castPoint on scene
 
-        STATE_MACHINE = new string[] { "", "walk", "change", "afraid", "dead" };    // Initialize state machine
+        STATE_MACHINE = new string[] { "", "walk", "change", "afraid", "dead", "contamined" };    // Initialize state machine
         currentState = STATE_MACHINE[0];                                            // By default state of villager is empty
 
         moveSpeed = INITIAL_SPEED;                                                  // Standard move speed of the villager
@@ -58,14 +59,14 @@ public class MachineStateVillager : MonoBehaviour
     {
         float actualLifePoints = lifePoints;
 
-        if (lifePoints <= 0)
+        if (lifePoints <= 0 && !bIsContamined)
         {
             bIsDead = true;
             currentState = STATE_MACHINE[4];
         }
 
         /* If villager see the player, start running from him ! */
-        if (CanSeePlayer(viewSight))
+        if (CanSeePlayer(viewSight) && !bIsContamined)
         {
             RunFromPlayer();
         }
@@ -169,6 +170,11 @@ public class MachineStateVillager : MonoBehaviour
 
             GetComponent<SpriteRenderer>().color = Color.red;
         }
+        else if (currentState == STATE_MACHINE[5])
+        {
+            GetComponent<SpriteRenderer>().color = Color.white;
+            currentState = STATE_MACHINE[0];
+        }
         /* End Handling State Machine */
 
         /* Handling animations */
@@ -183,7 +189,14 @@ public class MachineStateVillager : MonoBehaviour
 
         if (bIsWalking)
         {
-            villagerAnimator.SetBool("IsWalking", true);
+            if (bIsContamined)
+            {
+                villagerAnimator.SetBool("IsContamined", true);
+            }
+            else
+            {
+                villagerAnimator.SetBool("IsWalking", true);
+            }
         }
         else
         {
@@ -208,6 +221,12 @@ public class MachineStateVillager : MonoBehaviour
             villagerAnimator.SetBool("IsDead", false);
         }
         /* End Handling animations */
+    }
+
+    public void Contamined()
+    {
+        bIsContamined = true;
+        currentState = STATE_MACHINE[5];
     }
 
     private bool CanSeePlayer(float pDistance)
@@ -256,11 +275,6 @@ public class MachineStateVillager : MonoBehaviour
     {
         currentState = STATE_MACHINE[2];                                        // Return to walk state
         emote.SetActive(false);
-    }
-
-    public void Dying()
-    {
-        Destroy(gameObject);
     }
 
     /* Function to flip sprite */

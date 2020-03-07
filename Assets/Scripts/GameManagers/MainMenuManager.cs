@@ -27,10 +27,12 @@ public class MainMenuManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             arrowPosition++;
+            FindObjectOfType<AudioManager>().Play("Cursor");
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             arrowPosition--;
+            FindObjectOfType<AudioManager>().Play("Cursor");
         }
 
         if (Input.GetKeyDown(KeyCode.Return))
@@ -47,6 +49,8 @@ public class MainMenuManager : MonoBehaviour
             {
                 ExitGame();
             }
+
+            FindObjectOfType<AudioManager>().Play("Validate");
         }
 
         HandlingCursorPosition();

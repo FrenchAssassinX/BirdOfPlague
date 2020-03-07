@@ -50,6 +50,7 @@ public class AttackKnight : MonoBehaviour
             if (collider.gameObject.name.Equals("Player"))
             {
                 collider.gameObject.GetComponent<SpecsPlayer>().playerLifePoints -= knightDamage;
+                FindObjectOfType<AudioManager>().Play("PlayerHurt");
 
                 gameObject.GetComponent<MachineStateKnight>().bIsAttacking = false;
                 knightAnimator.SetBool("IsAttacking", gameObject.GetComponent<MachineStateKnight>().bIsAttacking);

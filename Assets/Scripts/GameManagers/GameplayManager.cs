@@ -9,11 +9,15 @@ public class GameplayManager : MonoBehaviour
     private GameObject gameOverManager;
     private GameObject gameOverPanel;
 
+    private bool bIsMusicPlayed;
+
     void Start()
     {
         player = GameObject.Find("Player");
         gameOverManager = GameObject.Find("GameOverManager");
         gameOverPanel = GameObject.Find("GameOverPanel");
+
+        bIsMusicPlayed = false;
 
         gameOverManager.SetActive(false);
         gameOverPanel.SetActive(false);
@@ -26,6 +30,12 @@ public class GameplayManager : MonoBehaviour
         {
             gameOverManager.SetActive(true);
             gameOverPanel.SetActive(true);
+        }
+
+        if (!bIsMusicPlayed && gameOverPanel.activeInHierarchy)
+        {
+            FindObjectOfType<AudioManager>().Play("GameOver");
+            bIsMusicPlayed = true;
         }
     }
 

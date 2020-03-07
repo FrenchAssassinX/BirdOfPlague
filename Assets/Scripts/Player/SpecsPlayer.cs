@@ -32,6 +32,7 @@ public class SpecsPlayer : MonoBehaviour
     {
         if (playerLifePoints <= 0f)
         {
+            gameObject.GetComponent<MovePlayer>().bCanMove = false;
             playerAnimator.SetBool("IsDead", true);
         }
 
@@ -41,6 +42,11 @@ public class SpecsPlayer : MonoBehaviour
     public void KillPlayer()
     {
         Destroy(gameObject);
+    }
+
+    public void PlayDeathCry()
+    {
+        FindObjectOfType<AudioManager>().Play("PlayerDeath");
     }
 
     private void HealthbarManagement()

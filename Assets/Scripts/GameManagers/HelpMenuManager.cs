@@ -20,6 +20,7 @@ public class HelpMenuManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Return))
         {
             GoToMenuScene();
+            FindObjectOfType<AudioManager>().Play("Validate");
         }
 
         AnimateReturnText();
@@ -59,6 +60,6 @@ public class HelpMenuManager : MonoBehaviour
     /* Function to return to main menu scene */
     private void GoToMenuScene()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 3);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 2);
     }
 }

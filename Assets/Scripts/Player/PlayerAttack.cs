@@ -67,12 +67,14 @@ public class PlayerAttack : MonoBehaviour
                 target = collider.gameObject;
 
                 collider.gameObject.GetComponent<SpriteRenderer>().color = Color.clear;
-
                 collider.gameObject.GetComponent<MachineStateVillager>().lifePoints -= bittingDamage;
+                FindObjectOfType<AudioManager>().Play("VillagerHurt");
 
                 Invoke("ResetColor", 0.1f);
             }
         }
+
+        FindObjectOfType<AudioManager>().Play("PlayerBite");
     }
 
     private void ResetColor()

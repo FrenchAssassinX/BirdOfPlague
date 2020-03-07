@@ -1,11 +1,13 @@
 ﻿using UnityEngine.Audio;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
     public Sound[] sounds;
     public static AudioManager instance;    // Handling instance of the game object between scenes
+    private string currentScene;
 
     void Awake()
     {
@@ -34,7 +36,19 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        Play("Theme");
+        currentScene = SceneManager.GetActiveScene().name;
+
+        Play("MainTheme");
+    }
+
+    private void Update()
+    {
+        if (!currentScene.Equals(SceneManager.GetActiveScene().name))
+        {
+            ChangeSceneTheme();
+
+            currentScene = SceneManager.GetActiveScene().name;
+        }
     }
 
     public void Play(string pName)
@@ -46,6 +60,30 @@ public class AudioManager : MonoBehaviour
         if (sound != null)
         {
             sound.source.Play();
+        }
+    }
+
+    public void Stop(string pName)
+    {
+        Sound sound = Array.Find(sounds, item => item.name == pName);
+
+        if (sound != null)
+        {
+            sound.source.Stop();
+        }
+    }
+
+    private void ChangeSceneTheme()
+    {
+        if (SceneManager.GetActiveScene().name.Equals("GameplayScene"))
+        {
+            Stop("MainTheme");
+            Play("Theme");
+        }
+        else if (SceneManager.GetActiveScene().name.Equals("MainMenuScene"))
+        {
+            Stop("Theme");
+            Play("MainTheme");
         }
     }
 }

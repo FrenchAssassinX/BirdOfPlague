@@ -31,7 +31,6 @@ public class MachineStateVillager : MonoBehaviour
     private bool bIsAfraid = false;                     // Boolean to change animation of villager when he's afraid by the vampire
     private bool bIsWalking= false;                     // 
     private bool bIsIdle = false;                       // 
-    private bool bIsDead = false;                       // 
     public bool bIsContamined = false;                 // 
 
     private float afraidSpeed = 10f;
@@ -49,7 +48,7 @@ public class MachineStateVillager : MonoBehaviour
 
         castPoint = transform.GetChild(0).gameObject.transform;                                     // Find castPoint on scene
 
-        STATE_MACHINE = new string[] { "", "walk", "change", "afraid", "dead", "contamined" };      // Initialize state machine
+        STATE_MACHINE = new string[] { "", "walk", "change", "afraid", "contamined" };              // Initialize state machine
         currentState = STATE_MACHINE[0];                                                            // By default state of villager is empty
 
         moveSpeed = INITIAL_SPEED;                                                                  // Standard move speed of the villager
@@ -61,14 +60,15 @@ public class MachineStateVillager : MonoBehaviour
     {
         float actualLifePoints = lifePoints;
 
-        if (lifePoints <= 0 && !bIsContamined && !bIsDead)
+        if (lifePoints <= 0 && !bIsContamined)
         {
-            bIsDead = true;
+            bIsContamined = true;
+            bIsAfraid = false;
             currentState = STATE_MACHINE[4];
         }
 
         /* If villager see the player, start running from him ! */
-        if (CanSeePlayer(viewSight) && !bIsContamined && !bIsDead)
+        if (CanSeePlayer(viewSight) && !bIsContamined)
         {
             RunFromPlayer();
         }
@@ -136,65 +136,59 @@ public class MachineStateVillager : MonoBehaviour
         }
         else if (currentState == STATE_MACHINE[3])      // Afraid state
         {
-            bIsAfraid = true;                                                       // Is afraid boolean passed to true for animation
-            bIsWalking = false;
-            bIsIdle = false;
-
-            System.Random random = new System.Random();                             // Create new random
-
-            /* Generating random X and Y direction for the player */
-            float directionX = (gameObject.transform.position.x) - (random.Next(1, 129));
-            float directionY = (gameObject.transform.position.y) - (random.Next(1, 129));
-
-            double angle = Math.Atan2(directionX, directionY);                      // Calculating an angle with the X and Y direction
-
-            Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
-
-            /* Handling moves of the villager based on the position of the player */
-            if (transform.position.x < player.transform.position.x)
+            if (!bIsContamined)
             {
-                horizontalMove = 0.1f;
+                bIsAfraid = true;                                                       // Is afraid boolean passed to true for animation
+                bIsWalking = false;
+                bIsIdle = false;
+
+                System.Random random = new System.Random();                             // Create new random
+
+                /* Generating random X and Y direction for the player */
+                float directionX = (gameObject.transform.position.x) - (random.Next(1, 129));
+                float directionY = (gameObject.transform.position.y) - (random.Next(1, 129));
+
+                double angle = Math.Atan2(directionX, directionY);                      // Calculating an angle with the X and Y direction
+
+                Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
+
+                /* Handling moves of the villager based on the position of the player */
+                if (transform.position.x < player.transform.position.x)
+                {
+                    horizontalMove = 0.1f;
+                }
+                else if (transform.position.x > player.transform.position.x)
+                {
+                    horizontalMove = -0.1f;
+                }
+
+                if (transform.position.y < player.transform.position.y)
+                {
+                    verticalMove = 0.1f;
+                }
+                else if (transform.position.y > player.transform.position.y)
+                {
+                    verticalMove = -0.1f;
+                }
+                /* End handling moves */
+
+                newVelocity.x = horizontalMove * moveSpeed * afraidSpeed * (float)Math.Cos(angle);    // Affect X velocity
+                newVelocity.y = verticalMove * moveSpeed * afraidSpeed * (float)Math.Sin(angle);      // Affect Y velocity
+
+                villagerBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
+
+                Invoke("StopRunFromPlayer", 5);
+                currentState = STATE_MACHINE[1];                                        // Return to walk state
             }
-            else if (transform.position.x > player.transform.position.x)
+            else
             {
-                horizontalMove = -0.1f;
+                currentState = STATE_MACHINE[1];                                        // Return to walk state
             }
-
-            if (transform.position.y < player.transform.position.y)
-            {
-                verticalMove = 0.1f;
-            }
-            else if (transform.position.y > player.transform.position.y)
-            {
-                verticalMove = -0.1f;
-            }
-            /* End handling moves */
-
-            newVelocity.x = horizontalMove * moveSpeed * afraidSpeed * (float)Math.Cos(angle);    // Affect X velocity
-            newVelocity.y = verticalMove * moveSpeed * afraidSpeed * (float)Math.Sin(angle);      // Affect Y velocity
-
-            villagerBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
-
-            Invoke("StopRunFromPlayer", 5);
-            currentState = STATE_MACHINE[1];                                        // Return to walk state
         }
-        else if (currentState == STATE_MACHINE[4])  // Dead state
+        else if (currentState == STATE_MACHINE[4])  // Contamined state
         {
-            Vector2 newVelocity = new Vector2();                                    // Vector2 for new velocity
-
-            newVelocity.x = 0;                                                      // Affect X velocity
-            newVelocity.y = 0;                                                      // Affect Y velocity
-
-            villagerBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
-
-            GetComponent<SpriteRenderer>().color = Color.red;
-
-            currentState = STATE_MACHINE[5];
-        }
-        else if (currentState == STATE_MACHINE[5])
-        {
-            GetComponent<SpriteRenderer>().color = Color.white;
             currentState = STATE_MACHINE[0];
+            emote.SetActive(false);
         }
         /* End Handling State Machine */
 
@@ -232,22 +226,7 @@ public class MachineStateVillager : MonoBehaviour
         {
             villagerAnimator.SetBool("IsIdle", false);
         }
-
-        if (bIsDead)
-        {
-            villagerAnimator.SetBool("IsDead", true);
-        }
-        else
-        {
-            villagerAnimator.SetBool("IsDead", false);
-        }
         /* End Handling animations */
-    }
-
-    public void Contamined()
-    {
-        bIsContamined = true;
-        currentState = STATE_MACHINE[5];
     }
 
     private bool CanSeePlayer(float pDistance)

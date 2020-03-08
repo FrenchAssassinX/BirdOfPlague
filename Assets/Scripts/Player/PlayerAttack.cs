@@ -31,7 +31,7 @@ public class PlayerAttack : MonoBehaviour
     void Update()
     {
         /* Input for bitting villagers */
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && !bIsBitting)
         {
             bIsBitting = true;      // Pass boolean to true
             Attack();               // Attack 
@@ -68,11 +68,14 @@ public class PlayerAttack : MonoBehaviour
             {
                 target = collider.gameObject;
 
-                collider.gameObject.GetComponent<SpriteRenderer>().color = Color.clear;
-                collider.gameObject.GetComponent<MachineStateVillager>().lifePoints -= bittingDamage;
-                FindObjectOfType<AudioManager>().Play("VillagerHurt");
+                if (!target.GetComponent<MachineStateVillager>().bIsContamined)
+                {
+                    target.GetComponent<SpriteRenderer>().color = Color.clear;
+                    target.GetComponent<MachineStateVillager>().lifePoints -= bittingDamage;
+                    FindObjectOfType<AudioManager>().Play("VillagerHurt");
 
-                Invoke("ResetColor", 0.1f);
+                    Invoke("ResetColor", 0.1f);
+                }
             }
         }
     }
@@ -80,6 +83,11 @@ public class PlayerAttack : MonoBehaviour
     private void ResetColor()
     {
         target.GetComponent<SpriteRenderer>().color = Color.white;
+    }
+
+    public void ResetBittting()
+    {
+        Debug.Log("Reset attack");
     }
 
     /* Function to display Attack circle */

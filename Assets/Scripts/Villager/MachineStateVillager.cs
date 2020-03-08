@@ -61,14 +61,14 @@ public class MachineStateVillager : MonoBehaviour
     {
         float actualLifePoints = lifePoints;
 
-        if (lifePoints <= 0 && !bIsContamined)
+        if (lifePoints <= 0 && !bIsContamined && !bIsDead)
         {
             bIsDead = true;
             currentState = STATE_MACHINE[4];
         }
 
         /* If villager see the player, start running from him ! */
-        if (CanSeePlayer(viewSight) && !bIsContamined)
+        if (CanSeePlayer(viewSight) && !bIsContamined && !bIsDead)
         {
             RunFromPlayer();
         }
@@ -188,6 +188,8 @@ public class MachineStateVillager : MonoBehaviour
             villagerBody2D.velocity = newVelocity;                                  // Affect new velocity to Body2D
 
             GetComponent<SpriteRenderer>().color = Color.red;
+
+            currentState = STATE_MACHINE[5];
         }
         else if (currentState == STATE_MACHINE[5])
         {

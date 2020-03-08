@@ -17,6 +17,8 @@ public class GameplayManager : MonoBehaviour
     private List<GameObject> listVillagers;
     private List<GameObject> villagerToRemove;
 
+    private GameObject targetNumberText;
+
     private bool bIsMusicGameOverPlayed;
     private bool bIsMusicVictoryPlayed;
 
@@ -32,6 +34,8 @@ public class GameplayManager : MonoBehaviour
         villagers = GameObject.FindGameObjectsWithTag("Villager");
         listVillagers = villagers.ToList();
         villagerToRemove = new List<GameObject>();
+
+        targetNumberText = GameObject.Find("TargetNumber");
 
         bIsMusicGameOverPlayed = false;
         bIsMusicVictoryPlayed = false;
@@ -86,6 +90,9 @@ public class GameplayManager : MonoBehaviour
             FindObjectOfType<AudioManager>().Play("Victory");
             bIsMusicVictoryPlayed = true;
         }
+
+        /* Displayed survivor number on screen */
+        targetNumberText.GetComponent<TMPro.TextMeshProUGUI>().text = listVillagers.Count.ToString();
     }
 
 }

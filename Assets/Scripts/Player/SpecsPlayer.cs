@@ -20,7 +20,7 @@ public class SpecsPlayer : MonoBehaviour
 
     void Start()
     {
-        playerLifePoints = 2f;
+        playerLifePoints = 12f;
         playerAnimator = GetComponent<Animator>();
 
         heartUI_1 = GameObject.Find("Heart1");

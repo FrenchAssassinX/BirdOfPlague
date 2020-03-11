@@ -97,6 +97,8 @@ public class GameOverManager : MonoBehaviour
 
     private void ReloadGameplayScene()
     {
+        DontDestroyOnLoad(GameObject.Find("CurrentLevel"));
+        GameObject.Find("CurrentLevel").GetComponent<CurrentLevel>().bLoadNextLevel = true;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

@@ -34,7 +34,7 @@ public class GameVictoryManager : MonoBehaviour
         {
             if (arrowPosition == 0)
             {
-                //ReloadGameplayScene();
+                LoadNextLevel();
             }
             else if (arrowPosition == 1)
             {
@@ -95,10 +95,15 @@ public class GameVictoryManager : MonoBehaviour
         }
     }
 
-    //private void ReloadGameplayScene()
-    //{
-    //    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    //}
+    private void LoadNextLevel()
+    {
+        DontDestroyOnLoad(GameObject.Find("CurrentLevel"));
+
+        GameObject.Find("CurrentLevel").GetComponent<CurrentLevel>().bLoadNextLevel = true;
+        GameObject.Find("CurrentLevel").GetComponent<CurrentLevel>().currentLevel++;
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 
     public void GoToMenuScene()
     {

@@ -8,13 +8,16 @@ public class GameplayManager : MonoBehaviour
 {
     private GameObject player;                  // Player game object
 
+    private GameObject levelManager;
     private GameObject gameVictoryManager;
     private GameObject gameVictoryPanel;
     private GameObject gameOverManager;
     private GameObject gameOverPanel;
+    private GameObject endGameManager;
+    private GameObject endGamePanel;
 
-    private GameObject[] villagers;
-    private List<GameObject> listVillagers;
+    public GameObject[] villagers;
+    public List<GameObject> listVillagers;
     private List<GameObject> villagerToRemove;
 
     private GameObject targetNumberText;
@@ -26,13 +29,14 @@ public class GameplayManager : MonoBehaviour
     {
         player = GameObject.Find("Player");
 
+        levelManager = GameObject.Find("LevelManager");
         gameVictoryManager = GameObject.Find("GameVictoryManager");
         gameVictoryPanel = GameObject.Find("GameVictoryPanel");
         gameOverManager = GameObject.Find("GameOverManager");
         gameOverPanel = GameObject.Find("GameOverPanel");
+        endGameManager = GameObject.Find("EndGameManager");
+        endGamePanel = GameObject.Find("EndGamePanel");
 
-        villagers = GameObject.FindGameObjectsWithTag("Villager");
-        listVillagers = villagers.ToList();
         villagerToRemove = new List<GameObject>();
 
         targetNumberText = GameObject.Find("TargetNumber");
@@ -44,10 +48,15 @@ public class GameplayManager : MonoBehaviour
         gameVictoryPanel.SetActive(false);
         gameOverManager.SetActive(false);
         gameOverPanel.SetActive(false);
+        endGameManager.SetActive(false);
+        endGamePanel.SetActive(false);
     }
 
     void Update()
     {
+        villagers = GameObject.FindGameObjectsWithTag("Villager");
+        listVillagers = villagers.ToList();
+
         /* If player is dead, go to game over scene */
         if (player == null)
         {
@@ -61,7 +70,7 @@ public class GameplayManager : MonoBehaviour
             FindObjectOfType<AudioManager>().Play("GameOver");
             bIsMusicGameOverPlayed = true;
         }
-        
+
         /* Verify wich villagers are infected */
         foreach (GameObject villager in listVillagers)
         {
@@ -80,8 +89,17 @@ public class GameplayManager : MonoBehaviour
         if (listVillagers.Count <= 0)
         {
             player.GetComponent<MovePlayer>().bCanMove = false;
-            gameVictoryManager.SetActive(true);
-            gameVictoryPanel.SetActive(true);
+
+            if (GameObject.Find("CurrentLevel").GetComponent<CurrentLevel>().currentLevel < 2)
+            {
+                gameVictoryManager.SetActive(true);
+                gameVictoryPanel.SetActive(true);
+            }
+            else
+            {
+                endGameManager.SetActive(true);
+                endGamePanel.SetActive(true);
+            }
         }
 
         /* Playing game over music when game over panel is displayed */
